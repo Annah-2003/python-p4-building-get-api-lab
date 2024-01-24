@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# app.py
 
 from flask import Flask, make_response, jsonify
 from flask_migrate import Migrate
@@ -20,19 +20,33 @@ def index():
 
 @app.route('/bakeries')
 def bakeries():
-    return ''
+    all_bakeries = Bakery.query.all()
+    serialized_bakeries = [bakery.to_dict() for bakery in all_bakeries]
+    return jsonify(serialized_bakeries)
 
 @app.route('/bakeries/<int:id>')
 def bakery_by_id(id):
-    return ''
+    bakery = Bakery.query.get(id)
+    if bakery:
+        serialized_bakery = bakery.to_dict(include=['baked_goods'])
+        return jsonify(serialized_bakery)
+    else:
+        return make_response(jsonify({'error': 'Bakery not found'}), 404)
 
 @app.route('/baked_goods/by_price')
 def baked_goods_by_price():
-    return ''
+    sorted_baked_goods = BakedGood.query.order_by(BakedGood.price.desc()).all()
+    serialized_baked_goods = [baked_good.to_dict() for baked_good in sorted_baked_goods]
+    return jsonify(serialized_baked_goods)
 
 @app.route('/baked_goods/most_expensive')
 def most_expensive_baked_good():
-    return ''
+    most_expensive = BakedGood.query.order_by(BakedGood.price.desc()).first()
+    if most_expensive:
+        serialized_most_expensive = most_expensive.to_dict()
+        return jsonify(serialized_most_expensive)
+    else:
+        return make_response(jsonify({'error': 'No baked goods found'}), 404)
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

@@ -1,3 +1,5 @@
+# models.py
+
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from sqlalchemy_serializer import SerializerMixin
@@ -30,11 +32,11 @@ class BakedGood(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    price = db.Column(db.Integer)
+    price = db.Column(db.Float)  # Change to Float to store decimal values
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
     bakery_id = db.Column(db.Integer, db.ForeignKey('bakeries.id'))
 
     def __repr__(self):
-        return f'<Baked Good {self.name}, ${self.price}>'
+        return f'<Baked Good {self.name}, ${self.price:.2f}>'  # Format price to two decimal places
